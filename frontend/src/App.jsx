@@ -27,7 +27,7 @@ function App() {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/predict`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: "hello testing" }),
+      body: JSON.stringify({ message }),
     });
 
     const data = await response.json();
