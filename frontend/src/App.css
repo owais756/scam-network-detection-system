@@ -72,13 +72,107 @@ button:hover {
 }
 
 .graph-container {
+  position: relative; /* needed to position legend inside */
   width: 100%;
-  height: 500px;
+  height: auto;
+  min-height: 540px;
   margin-top: 20px;
   border-radius: 12px;
   overflow: hidden;
-  background: #f0ead6;
+  background: #9e7676;
   border: 1px solid #334155;
+  display: flex;
+  flex-direction: column;
+}
+
+.side-by-side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.chart-container {
+  flex: 0 0 320px; /* fixed width for chart area */
+  background: #1e293b;
+  padding: 10px;
+  border-radius: 12px;
+  color: white;
+}
+
+.charts-row {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.chart-wrapper {
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #334155;
+  flex: 0 0 auto;
+}
+
+.legend {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(30,41,59,0.85);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  z-index: 2;
+}
+
+.size-legend,
+.color-legend {
+  margin-bottom: 8px;
+}
+
+.size-samples {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.radar-container {
+  margin-top: 20px;
+  text-align: center;
+  color: white;
+}
+.overall-score {
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+.size-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.size-item .dot {
+  border-radius: 50%;
+  background: #aaa;
+  display: inline-block;
+}
+
+.color-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
 }
 .risk {
   font-weight: bold;
@@ -103,4 +197,14 @@ button:hover {
   background: #111827;
   border-left: 4px solid #ff4d4f;
   border-radius: 8px;
+}
+
+.interpretation-box {
+  margin-top: 20px;
+  padding: 20px;
+  background: #111827;
+  border-left: 4px solid #ff4d4f;
+  border-radius: 8px;
+  line-height: 1.5;
+  font-size: 14px;
 }
