@@ -24,17 +24,14 @@ function App() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // whenever graph data changes, reapply colliding force and warm up simulation
   useEffect(() => {
     if (graphRef.current) {
       graphRef.current.d3Force("collide",
         d3.forceCollide().radius((d) => getNodeRadius(d) + 4).strength(0.8)
       );
       graphRef.current.d3Force("link").distance((d) => {
-        // ensure links are at least the sum of the two node radii plus padding
         return getNodeRadius(d.source) + getNodeRadius(d.target) + 20;
       });
-      // nudge simulation to avoid stuck layouts
       graphRef.current.d3ReheatSimulation();
     }
   }, [graphData]);
@@ -52,7 +49,6 @@ function App() {
     if (data.graph_data?.nodes) {
       setGraphData(data.graph_data);
       
-      // set default selected profile to highest-risk entity
       const nonMessageNodes = data.graph_data.nodes.filter(n => n.type !== "message");
       const highestRisk = nonMessageNodes.reduce((max, node) => 
         (node.node_risk || 0) > (max.node_risk || 0) ? node : max, 
@@ -64,32 +60,28 @@ function App() {
     }
   };
 
-  // determine a color based on the risk score (0-100)
-
-  // build bar data sorted descending by risk (exclude message node)
   const getBarData = () => {
     return [...graphData.nodes]
       .filter((n) => n.type !== "message")
       .sort((a, b) => (b.node_risk || 0) - (a.node_risk || 0));
   };
+
   const getRiskColor = (risk = 0) => {
-    if (risk >= 90) return "#DC143C"; // crimson red
-    if (risk >= 70) return "#FF8C00"; // dark orange
-    if (risk >= 40) return "#FFBF00"; // amber
-    if (risk >= 20) return "#FFFF00"; // yellow
-    return "#52c41a"; // green very low
+    if (risk >= 90) return "#DC143C";
+    if (risk >= 70) return "#FF8C00";
+    if (risk >= 40) return "#FFBF00";
+    if (risk >= 20) return "#FFFF00";
+    return "#52c41a";
   };
 
-  // convert a node's risk score into a drawable radius
   const getNodeRadius = (node) => {
-    if (node.type === "message") return 14; // fixed for central message
+    if (node.type === "message") return 14;
     const risk = node.node_risk || 0;
-    const base = 4; // minimum radius
-    const maxExtra = 16; // additional size for high risk
+    const base = 4;
+    const maxExtra = 16;
     return base + (risk / 100) * maxExtra;
   };
 
-  // selected entity profile for radar chart
   const [selectedProfile, setSelectedProfile] = useState(null);
 
   const handleNodeClick = (node) => {
@@ -97,7 +89,6 @@ function App() {
     setSelectedProfile(node.risk_profile || null);
   };
 
-  // simple bar-chart component within same file
   const BarChart = ({ data, getColor }) => {
     const barData = data
       .filter((n) => n.type !== "message")
@@ -119,17 +110,12 @@ function App() {
     return (
       <div>
         <svg width={width} height={height}>
-          {/* y-axis line */}
           <line x1={margin.left} y1={margin.top} x2={margin.left} y2={height - margin.bottom} stroke="#ccc" />
-          {/* x-axis line */}
           <line x1={margin.left} y1={height - margin.bottom} x2={width - margin.right} y2={height - margin.bottom} stroke="#ccc" />
 
-          {/* y-axis label */}
           <text x={15} y={height / 2} fontSize="12" fill="#ccc" textAnchor="middle" transform={`rotate(-90 15 ${height / 2})`}>
             Risk Score
           </text>
-
-          {/* y-axis lines and labels */}
           {[0, 20, 40, 60, 80, 100].map((val) => (
             <g key={val}>
               <line
@@ -151,7 +137,6 @@ function App() {
             </g>
           ))}
 
-          {/* bars */}
           {barData.map((d, i) => (
             <g key={d.id}>
               <rect
@@ -161,7 +146,6 @@ function App() {
                 height={height - margin.bottom - yScale(d.node_risk || 0)}
                 fill={getColor(d.node_risk || 0)}
               />
-              {/* risk score on top of bar */}
               <text
                 x={xScale(i) + barWidth / 2}
                 y={yScale(d.node_risk || 0) - 5}
@@ -175,7 +159,6 @@ function App() {
             </g>
           ))}
 
-          {/* x-axis label */}
           <text x={width / 2} y={height - 5} fontSize="11" fill="#ccc" textAnchor="middle" fontWeight="bold">
             Entity Label
           </text>
@@ -188,7 +171,6 @@ function App() {
     );
   };
 
-  // radar/spider chart component
   const RadarChart = ({ profile }) => {
     if (!profile) return null;
     const labels = [
@@ -229,7 +211,6 @@ function App() {
     return (
       <div>
         <svg width={size} height={size}>
-          {/* background grid circles with radial labels */}
           {[1, 2, 3, 4, 5].map((n) => {
             const r = (n / 5) * radius;
             return (
@@ -244,7 +225,6 @@ function App() {
                   fill="none"
                   stroke="#555"
                 />
-                {/* radial axis label (0-100 scale) */}
                 <text
                   x={center}
                   y={center - r + 10}
@@ -258,7 +238,7 @@ function App() {
             );
           })}
 
-          {/* spokes */}
+
           {labels.map((_, i) => {
             const angle = i * angleStep - Math.PI / 2;
             return (
@@ -273,7 +253,7 @@ function App() {
             );
           })}
 
-          {/* labels at the end of spokes */}
+
           {labels.map((_, i) => {
             const angle = i * angleStep - Math.PI / 2;
             const x = center + (radius + 25) * Math.cos(angle);
@@ -305,7 +285,7 @@ function App() {
             );
           })}
 
-          {/* threat footprint */}
+
           <polygon
             points={points}
             fill="rgba(255, 191, 0, 0.4)"
@@ -348,7 +328,6 @@ function App() {
 
             <div className="side-by-side">
               <div className="graph-container" ref={containerRef}>
-                {/* legend overlay inside same container */}
                 <div className="legend">
                 <div className="size-legend">
                   <strong>Node Size (risk)</strong>
@@ -391,7 +370,7 @@ function App() {
                     Very Low
                   </div>
                 </div>
-              </div> {/* end legend */}
+              </div>
 
               <div style={{ flex: "0 0 500px", position: "relative" }}>
                 <ForceGraph2D
@@ -431,7 +410,6 @@ function App() {
                     ctx.shadowBlur = 0;
 
                     ctx.fillStyle = "black";
-                    // draw label just outside radius to avoid overlap
                     ctx.fillText(node.id, node.x + radius + 4, node.y + 3);
                   }}
                 />
@@ -439,7 +417,7 @@ function App() {
               <div style={{ textAlign: "center", fontSize: "12px", color: "#ccc", padding: "12px", background: "rgba(0,0,0,0.3)" }}>
                 Figure 1: Risk-Weighted Network Map
               </div>
-            </div> {/* end graph-container */}
+            </div>
 
             <div className="meaning-box">
               <h3>Graph Meaning</h3>
@@ -454,7 +432,7 @@ function App() {
                 <RadarChart profile={selectedProfile} />
               </div>
             </div>
-            </div> {/* end side-by-side */}
+            </div>
 
             <div className="interpretation-box">
               <h3>Graph Interpretations and Risk Analysis</h3>

@@ -72,7 +72,7 @@ button:hover {
 }
 
 .graph-container {
-  position: relative; /* needed to position legend inside */
+  position: relative;
   width: 100%;
   height: auto;
   min-height: 540px;
@@ -93,7 +93,7 @@ button:hover {
 }
 
 .chart-container {
-  flex: 0 0 320px; /* fixed width for chart area */
+  flex: 0 0 320px;
   background: #1e293b;
   padding: 10px;
   border-radius: 12px;
