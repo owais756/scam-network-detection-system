@@ -40,7 +40,7 @@ function App() {
   }, [graphData]);
 
   const analyzeMessage = async () => {
-    const response = await fetch("http://scam-network-backend.onrender.com/predict", {
+    const response = await fetch("https://scam-backend-gx2w.onrender.com/predict", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),
